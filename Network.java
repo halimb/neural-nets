@@ -83,20 +83,18 @@ public class Network {
 		double[] result = new double[getBiases(layer).length];
 		if(layer == numberOfLayers){
 			result = F.hadamard(F.substract(actual, ideal),
-							    F.sigmoidPrime(getZs(layer)));
+					    F.sigmoidPrime(getZs(layer)));
 			
 			setDeltas(layer, result);
 			
 		}
 		else{
-			result = F.hadamard( 
-					   F.mDotv( F.transpose(getWeights(layer + 1)), calculateDeltas(layer + 1) ),
-					   F.sigmoidPrime(getZs(layer))
-					   );
+			result = F.hadamard(F.mDotv( F.transpose(getWeights(layer + 1)), 
+						     calculateDeltas(layer + 1) ),
+					    F.sigmoidPrime(getZs(layer)) );
 			setDeltas(layer, result);
 		}
 		return result;
-		
 	}
 	
 	/* makes a call to the private method above to calculate
