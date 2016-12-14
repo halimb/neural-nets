@@ -10,8 +10,8 @@ public class F {
 		for(int i = 0; i < ds.length; i++){
 			if(ds[i].length != size){
 				throw new MismatchException("trying to add vectors of different dimensions."
-											+ "dimension should be: " + size 
-											+ "\nactual dimension" + ds[i].length);
+							    + "dimension should be: " + size 
+							    + "\nactual dimension" + ds[i].length);
 			}
 		}
 		
