@@ -124,11 +124,6 @@ public class Network {
 	}
 	public void setDeltas(int layer, double[] values){
 			deltas[layer - 2] = values;
-		/*else{
-			double[] zero = {0.0};
-			deltas.add(zero);
-			setDeltas(layer, values);
-		}*/
 	}
 	public void setBiases(int layer, double[] values){
 		biases[layer - 2] =  values;
