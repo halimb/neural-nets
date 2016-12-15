@@ -5,8 +5,8 @@ import java.util.Random;
 
 public class Test {
 	public static int GLOBALCOUNTER = 0;
-	public static final String TRAINING_FILEPATH = "src/network/poker-hand-training-true.data";
-	public static final String TESTING_FILEPATH = "src/network/poker-hand-testing.data";
+	public static final String TRAINING_FILEPATH = "poker-hand-training-true.data";
+	public static final String TESTING_FILEPATH = "poker-hand-testing.data";
 	public static void main(String[] args){
 		
 		Network net = new Network(10, 30,10);
