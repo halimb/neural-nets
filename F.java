@@ -1,7 +1,5 @@
 package network;
 
-
-
 public class F {
 	
 	//returns the sum of two or more vectors 
@@ -24,7 +22,7 @@ public class F {
 		return res;
 	}
 	
-	//subsracts vy from vs and returns the resulting vector 
+	//subsracts vy from vx and returns the resulting vector 
 	public static double[] substract(double[] vx, double[] vy ){
 		if(vx.length != vy.length){
 			throw new MismatchException("trying to add vectors of different dimensions."
@@ -59,7 +57,7 @@ public class F {
 	//Sigmoid prime for elementwise application to a vector 
 	public static double[] sigmoidPrime(double[] x){
 		for(int i = 0; i < x.length; i++){
-			x[i] = sigmoid(x[i])*(1 - sigmoid(x[i]));
+			x[i] = sigmoidPrime(x[i]);
 		}
 		return x;
 	}
@@ -116,6 +114,38 @@ public class F {
 			}
 		}
 		return result;
+	}
+	
+	/* helper method that returns an array of matrices 
+	 * of the same dimensions as its parameter's. 
+	 * all elements are initialized to 0.0*/
+	public static double[][][] zeros(double[][][] matrix){
+		double[][][] zeros =new double[matrix.length][][];
+		
+		for(int i = 0; i < zeros.length; i++){
+			zeros[i] = new double[matrix[i].length][];
+			for(int j = 0; j < zeros[i].length; j++){
+				zeros[i][j] = new double[matrix[i][j].length];
+				for(int k = 0; k < zeros[i][j].length; k++){
+					zeros[i][j][k] = 0.0;
+				}
+			}
+		}
+		return zeros;
+	}
+	
+	/* helper method that returns an array of vectors 
+	 * of the same dimension as its parameter's. 
+	 * all elements are initialized to 0.0*/
+	public static double[][] zeros(double[][] matrice){
+		double[][] zeros = new double[matrice.length][];
+		for(int j = 0; j < zeros.length; j++){
+			zeros[j] = new double[matrice[j].length];
+			for(int k = 0; k < zeros[j].length; k++){
+				zeros[j][k] = 0.0;
+			}
+		}
+		return zeros;
 	}
 	
 }

@@ -3,6 +3,7 @@ package network;
 import java.util.Random;
 
 
+
 public class Network {
 
 	public int numberOfLayers;
@@ -109,7 +110,8 @@ public class Network {
 	 * and a set of training data (input/ideal output pairs), this method calculates
 	 * the cost function derivative (gradient) for each input, then uses the prior 
 	 * to update the network's weights and biases with the goal of minimizing the cost.*/
-	public void learn(TrainingData[] training, double learningRate, int chunkSize){
+	public void train(TrainingData[] training, double learningRate, int chunkSize){
+		
 		int numOfchunks = training.length / chunkSize;
 		int remainder = training.length % chunkSize;
 		
@@ -117,8 +119,10 @@ public class Network {
 		 * sum cost function partial derivative with respect
 		 * to individual weights (dC/dw) and biases (dC/db) 
 		 * (i.e: components of the cost function's gradient)*/
-		double[][][] dCdw = zeroWeights();
-		double[][] dCdb = zeroBiases();
+		double[][][] dCdw = F.zeros(weights);
+		double[][] dCdb = F.zeros(biases);
+		
+		
 		
 		// loops through the learning batch chunks
 		for(int x = 0; x <= numOfchunks; x++){
@@ -139,61 +143,54 @@ public class Network {
 				double[] input = training[i].getInput();
 				double[] ideal = training[i].getDesired();
 				calculateDeltas(input, ideal);
-				// loops through the network's layers 
+				
+				 /* increments the sum of the cost function's partial
+				 * derivative with respect to the bias and  weight 
+				 * with the value of the partial derivatives for the 
+				 * current training data couple*/
+				//biases errors
 				for(int j = 0; j < numberOfLayers - 1; j++){
-					/* increments the sum of the cost function's partial
-					 * derivative with respect to the bias and  weight 
-					 * with the value of the partial derivatives for the 
-					 * current training data couple*/
 					for(int k = 0; k < biases[j].length; k++){
 						dCdb[j][k] += deltas[j][k];
+					}
+				}
+				
+				//weights errors
+				for(int j = 0; j < numberOfLayers - 1; j++){
+					for(int k = 0; k < weights[j].length; k++){
 						for(int n = 0; n < weights[j][k].length; n++){
-					    	dCdw[j][k][n] += activations[j][n] * deltas[j][k];
+							double activation = activations[j][k];
+							double delta = deltas[j][n];
+							dCdw[j][k][n] += activation * delta;
 						}
 					}
 				}
+				
 			}
-			//loops through the network
+			/* applies stochastic gradient descent to the networks  *
+			 * weights and biases using the values calculated above */
+			//biases
 			for(int i = 0; i < numberOfLayers - 1; i++){
-				/* applies stochastic gradient descent to the network's *
-				 * weights and biases using the values calculated above */
 				for(int j = 0; j < biases[i].length; j++){
 					biases[i][j] -= ((learningRate/chunkSize) * dCdb[i][j]);
+				}
+			}
+				
+			//weights
+			for(int i = 0; i < numberOfLayers - 1; i++){
+				for(int j = 0; j < weights[i].length; j++){
 					for(int k = 0; k < weights[i][j].length; k++){
-						weights[i][j][k] -= ((learningRate/chunkSize) * dCdw[i][j][k]);
+						weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
 					}
 				}
 			}
+			
+			System.out.println("Completed chunk : " + x);
 		}
+		System.out.println("SUCCESSFULLY FINISHED LEARNING");
 	}
 	
-	/* helper method that returns an array of matrices 
-	 * of the same dimensions as the network's weights. 
-	 * all elements are initialized to 0.0*/
-	private double[][][] zeroWeights(){
-		double[][][] zeros = weights;
-		for(int i = 0; i < weights.length; i++){
-			for(int j = 0; j < weights[i].length; j++){
-				for(int k = 0; k < weights[i][j].length; k++){
-					zeros[i][j][k] = 0.0;
-				}
-			}
-		}
-		return zeros;
-	}
 	
-	/* helper method that returns an array of vectors 
-	 * of the same dimension as the network's biases. 
-	 * all elements are initialized to 0.0*/
-	private double[][] zeroBiases(){
-		double[][] zeros = biases;
-		for(int j = 0; j < biases.length; j++){
-			for(int k = 0; k < biases[j].length; k++){
-				zeros[j][k] = 0.0;
-			}
-		}
-		return zeros;
-	}
 	public double[] getBiases(int layer){
 		return biases[layer - 2];
 	}
