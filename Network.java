@@ -7,7 +7,6 @@ public class Network {
 
 	public int numberOfLayers;
 	public int inputLayerSize;
-	public double[] actual;
 	public double[][][] weights;
 	public double[][] biases;
 	public double[][] activations;
@@ -88,8 +87,8 @@ public class Network {
 			setDeltas(layer, result);
 		}
 		else{
-			result = F.hadamard(F.mDotv( F.transpose(getWeights(layer + 1)),
-						    calculateDeltas(layer + 1, input, idealOutput) ),
+			result = F.hadamard(F.mDotv( F.transpose(getWeights(layer + 1)), 
+						     calculateDeltas(layer + 1, input, idealOutput) ),
 					    F.sigmoidPrime(getZs(layer)) );
 			setDeltas(layer, result);
 		}
@@ -105,48 +104,72 @@ public class Network {
 		calculateDeltas(2, input, idealOutput);
 	}
 	
-	// <<TO COMPLETE !>>
+
 	/* Stochastic Gradient Descent (SGD) implementation. given a learning rate
 	 * and a set of training data (input/ideal output pairs), this method calculates
 	 * the cost function derivative (gradient) for each input, then uses the prior 
 	 * to update the network's weights and biases with the goal of minimizing the cost.*/
-	public void updateNetwork(double learningRate, TrainingData[] training){
-		int batchSize = training.length;
-		actual = new double[batchSize];
-		/* initializes the matrices that will contain the mean 
-		 * value of each cost function derivative with respect
-		 * to individual weights and biases (i.e:  components 
-		 * of the cost function's gradient)*/
+	public void learn(TrainingData[] training, double learningRate, int chunkSize){
+		int numOfchunks = training.length / chunkSize;
+		int remainder = training.length % chunkSize;
+		
+		/* initializes the matrices that will contain the 
+		 * sum cost function partial derivative with respect
+		 * to individual weights (dC/dw) and biases (dC/db) 
+		 * (i.e: components of the cost function's gradient)*/
 		double[][][] dCdw = zeroWeights();
 		double[][] dCdb = zeroBiases();
-		double input[];
-		double ideal[];
-		for(int i = 0; i < batchSize; i++){
-			input = training[i].getInput();
-			actual = feedForward(input);
-			ideal = training[i].getDesired();
-			calculateDeltas(input, ideal);
-			for(int j = 0; j < numberOfLayers - 1; j++){
-				for(int k = 0; k < biases[j].length; k++){
-					dCdb[j][k] += deltas[j][k];
-					for(int n = 0; n < weights[j][k].length; n++){
-				    	dCdw[j][k][n] += activations[j][n] * deltas[j][k];
+		
+		// loops through the learning batch chunks
+		for(int x = 0; x <= numOfchunks; x++){
+			int startIndex, endIndex;
+			if(x < numOfchunks - 1){
+				startIndex = x * chunkSize;
+				endIndex = startIndex + chunkSize;
+			}
+			else if(remainder > 0){
+				startIndex = numOfchunks * chunkSize;
+				endIndex = training.length;
+			}
+			else{
+				break;
+			}
+			// loops through the chunk of training data
+			for(int i = x * chunkSize; i < endIndex; i++){
+				double[] input = training[i].getInput();
+				double[] ideal = training[i].getDesired();
+				calculateDeltas(input, ideal);
+				// loops through the network's layers 
+				for(int j = 0; j < numberOfLayers - 1; j++){
+					/* increments the sum of the cost function's partial
+					 * derivative with respect to the bias and  weight 
+					 * with the value of the partial derivatives for the 
+					 * current training data couple*/
+					for(int k = 0; k < biases[j].length; k++){
+						dCdb[j][k] += deltas[j][k];
+						for(int n = 0; n < weights[j][k].length; n++){
+					    	dCdw[j][k][n] += activations[j][n] * deltas[j][k];
+						}
+					}
+				}
+			}
+			//loops through the network
+			for(int i = 0; i < numberOfLayers - 1; i++){
+				/* applies stochastic gradient descent to the networks  *
+				 * weights and biases using the values calculated above */
+				for(int j = 0; j < biases[i].length; j++){
+					biases[i][j] -= ((learningRate/chunkSize) * dCdb[i][j]);
+					for(int k = 0; k < weights[i][j].length; k++){
+						weights[i][j][k] -= ((learningRate/chunkSize) * dCdw[i][j][k]);
 					}
 				}
 			}
 		}
-		
-		for(int i = 0; i < numberOfLayers - 1; i++){
-			for(int j = 0; j < biases[i].length; j++){
-				biases[i][j] -= ((learningRate/batchSize) * dCdb[i][j]);
-				for(int k = 0; k < weights[i][j].length; k++){
-					weights[i][j][k] -= ((learningRate/batchSize) * dCdw[i][j][k]);
-				}
-			}
-		}
-		
 	}
 	
+	/* helper method that returns an array of matrices 
+	 * of the same dimensions as the network's weights. 
+	 * all elements are initialized to 0.0*/
 	private double[][][] zeroWeights(){
 		double[][][] zeros = weights;
 		for(int i = 0; i < weights.length; i++){
@@ -159,6 +182,9 @@ public class Network {
 		return zeros;
 	}
 	
+	/* helper method that returns an array of vectors 
+	 * of the same dimension as the network's biases. 
+	 * all elements are initialized to 0.0*/
 	private double[][] zeroBiases(){
 		double[][] zeros = biases;
 		for(int j = 0; j < biases.length; j++){
