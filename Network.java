@@ -155,7 +155,7 @@ public class Network {
 			}
 			//loops through the network
 			for(int i = 0; i < numberOfLayers - 1; i++){
-				/* applies stochastic gradient descent to the networks  *
+				/* applies stochastic gradient descent to the network's *
 				 * weights and biases using the values calculated above */
 				for(int j = 0; j < biases[i].length; j++){
 					biases[i][j] -= ((learningRate/chunkSize) * dCdb[i][j]);
