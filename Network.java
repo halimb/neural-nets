@@ -2,8 +2,6 @@ package network;
 
 import java.util.Random;
 
-
-
 public class Network {
 
 	public int numberOfLayers;
@@ -17,8 +15,7 @@ public class Network {
 	/* CONSTRUCTOR
 	 * The number of int parameters in the Network(int...n)
 	 * is the number of layers in the network, with each 
-	 * entry represents the number of neurons in a given layer.
-	 * */
+	 * entry represents the number of neurons in a given layer.*/
 	public Network(int ... n){
 		numberOfLayers = n.length;
 		inputLayerSize = n[0];
@@ -122,8 +119,6 @@ public class Network {
 		double[][][] dCdw = F.zeros(weights);
 		double[][] dCdb = F.zeros(biases);
 		
-		
-		
 		// loops through the learning batch chunks
 		for(int x = 0; x <= numOfchunks; x++){
 			int startIndex, endIndex;
@@ -180,11 +175,10 @@ public class Network {
 			for(int i = 0; i < numberOfLayers - 1; i++){
 				for(int j = 0; j < weights[i].length; j++){
 					for(int k = 0; k < weights[i][j].length; k++){
-						weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
+						weights[i][j][k] -= ((learningRate/chunkSize) * dCdw[i][j][k]);
 					}
 				}
 			}
-			
 			System.out.println("Completed chunk : " + x);
 		}
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
@@ -209,19 +203,7 @@ public class Network {
 	public void setDeltas(int layer, double[] values){
 			deltas[layer - 2] = values;
 	}
-	public void setBiases(int layer, double[] values){
-		biases[layer - 2] =  values;
-	}
-	public void setWeights(int layer, double[][] values){
-		weights[layer - 2] =  values;
-	}
-	public void setZs(int layer, double[] values){
-		zs[layer - 2] =  values;
-	}
-	public void setActivations(int layer, double[] values){
-		activations[layer - 1] =  values;
-	}
-
+	
 	@Override
 	public String toString(){
 		return "biases: " + biases.length
