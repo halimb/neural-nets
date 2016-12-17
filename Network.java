@@ -44,7 +44,6 @@ public class Network {
 		System.out.println("Total number of layers = " + numberOfLayers);
 	}
 	
-	
 	/* takes in an input vector, of the same dimension as 
 	 * the first layer of the network (the input layer), 
 	 * then feeds that input to the next layer, through 
@@ -102,7 +101,6 @@ public class Network {
 		calculateDeltas(2, input, idealOutput);
 	}
 	
-
 	/* Stochastic Gradient Descent (SGD) implementation. given a learning rate
 	 * and a set of training data (input/ideal output pairs), this method calculates
 	 * the cost function derivative (gradient) for each input, then uses the prior 
@@ -183,7 +181,6 @@ public class Network {
 		}
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
 	}
-	
 	
 	public double[] getBiases(int layer){
 		return biases[layer - 2];
