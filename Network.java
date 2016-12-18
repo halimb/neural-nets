@@ -195,23 +195,11 @@ public class Network {
 			for(int i = 0; i < numberOfLayers - 1; i++){
 				for(int j = 0; j < weights[i].length; j++){
 					for(int k = 0; k < weights[i][j].length; k++){
-						weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
+						weights[i][j][k] -= ((learningRate/chunkSize) * dCdw[i][j][k]);
 					}
 				}
 			}
-			if(x % 10 == 0){
-				//printWeights();
-				double[] in1 = {1.0, 0.0};
-				
-				double[] out1 = {1.0};
-				
-				TrainingData one = new TrainingData(in1, out1);
-				double[] result = this.feedForward(in1);
-				NANDTest.buidler.append((String.format("\n> actual = %.3f,"
-						+ " ideal = %.3f, lr:%.2f, batch:%d", result[0],
-						out1[0], learningRate, chunkSize)));
-			}
-			//System.out.println("Completed chunk : " + x + "\n");
+			System.out.println("Completed chunk : " + x );
 			
 		}
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
