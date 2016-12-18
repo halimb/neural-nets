@@ -33,7 +33,8 @@ public class Network {
 			for(int j = 0; j < biases[i].length; j++){
 				//rand.setSeed(System.currentTimeMillis());
 				biases[i][j] = rand.nextGaussian() * 0.3;
-				System.out.println(String.format("INITIAL BIAS[%d][%d]=", i, j) + biases[i][j]);
+				System.out.println(String.format("INITIAL BIAS[%d][%d]=", i, j)
+						+ biases[i][j]);
 
 			}
 		}
@@ -45,14 +46,12 @@ public class Network {
 				for(int k = 0; k < weights[i][j].length; k++){
 					//rand.setSeed(System.currentTimeMillis());
 					weights[i][j][k] = rand.nextGaussian() ;
-					System.out.println(String.format("INITIAL WEIGHT[%d][%d][%d]=", i, j, k) + weights[i][j][k]);
+					System.out.println(String.format("INITIAL"
+							+ " WEIGHT[%d][%d][%d]=", i, j, k) 
+							+ weights[i][j][k]);
 				}
 			}
 		}
-		
-		System.out.println("Weights Size = " + weights.length + ", Biases size = " + biases.length);
-		System.out.println("Total number of layers = " + numberOfLayers);
-		printWeights();
 	}
 	
 	
@@ -158,6 +157,7 @@ public class Network {
 				 * derivative with respect to the bias and  weight 
 				 * with the value of the partial derivatives for the 
 				 * current training data couple*/
+				
 				//biases errors
 				for(int j = 0; j < numberOfLayers - 1; j++){
 					for(int k = 0; k < biases[j].length; k++){
@@ -190,16 +190,14 @@ public class Network {
 			for(int i = 0; i < numberOfLayers - 1; i++){
 				for(int j = 0; j < weights[i].length; j++){
 					for(int k = 0; k < weights[i][j].length; k++){
-						weights[i][j][k] -= ((learningRate/chunkSize) * dCdw[i][j][k]);
+						weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
 					}
 				}
 			}
-			System.out.println("Completed chunk : " + x );
-			
+			System.out.println("Completed chunk : " + x);
 		}
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
 	}
-	
 	
 	public double[] getBiases(int layer){
 		return biases[layer - 2];
@@ -254,8 +252,9 @@ public class Network {
 				System.out.println("");
 			}
 		}
-		System.out.println("\n\n");
+		System.out.println("\n");
 	}
+	
 	public void printDeltas(){
 		System.out.println("DELTAS:");
 		for(int i = 0; i < deltas.length; i++){
@@ -265,7 +264,7 @@ public class Network {
 			}
 			System.out.println("");
 		}
-		System.out.println("\n\n");
+		System.out.println("\n");
 	}
 	
 	public void printActivations(){
@@ -277,7 +276,7 @@ public class Network {
 			}
 			System.out.println("");
 		}
-		System.out.println("\n\n");
+		System.out.println("\n");
 	}
 	
 	public void printBiases(){
@@ -289,6 +288,6 @@ public class Network {
 			}
 			System.out.println("");
 		}
-		System.out.println("\n\n");
+		System.out.println("\n");
 	}
 }
