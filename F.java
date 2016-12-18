@@ -38,7 +38,7 @@ public class F {
 	
 	//Sigmoid (logistic) function
 	public static double sigmoid(double x){
-		return (1.0/(1.0+Math.exp(-x)));
+		return (1.0/(1.0+Math.exp(-x)) );
 	}
 	
 	//Applies the Sigmoid function to each entry in a vector and returns it
@@ -80,20 +80,26 @@ public class F {
 	//takes a matrix and a vector parameters, returns the matrix product vector
 	public static double[] mDotv(double[][] matrix, double[] vector) throws MismatchException{
 
-		if(vector.length == matrix.length){
-			for(int i = 0; i < vector.length; i++){
-				for(int j = 0; j < matrix[i].length; j++){
-					matrix[i][j] *= vector[i];
+		if(vector.length == matrix[0].length){
+			double[] result = new double[matrix.length];
+			if(vector.length > 1){
+				for(int i = 0; i < matrix.length; i++){
+					for(int j = 0; j < vector.length; j++){
+						matrix[i][j] *= vector[j];
+					}
+				}
+				for(int i = 0; i < result.length; i++){
+					result[i] = 0.0;
+					for(int j = 0; j < vector.length; j++){
+						//SUM THE COLUMNS
+						result[i] += matrix[i][j];
+					}
 				}
 			}
-			double[] result = new double[matrix[0].length];
-			for(int i = 0; i < result.length; i++){
-				double res = 0.0;
-				for(int j = 0; j < matrix.length; j++){
-					//SUM THE COLUMNS
-					res += matrix[j][i];
+			else{
+				for(int i = 0; i < result.length; i++){
+					result[i] = matrix[i][0] * vector[0];
 				}
-				result[i] = res;
 			}
 			return result;
 		}

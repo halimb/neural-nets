@@ -1,6 +1,11 @@
 package network;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.attribute.AclEntry.Builder;
 import java.util.Random;
+
+
 
 public class Network {
 
@@ -15,7 +20,8 @@ public class Network {
 	/* CONSTRUCTOR
 	 * The number of int parameters in the Network(int...n)
 	 * is the number of layers in the network, with each 
-	 * entry represents the number of neurons in a given layer.*/
+	 * entry represents the number of neurons in a given layer.
+	 * */
 	public Network(int ... n){
 		numberOfLayers = n.length;
 		inputLayerSize = n[0];
@@ -27,22 +33,33 @@ public class Network {
 		Random rand = new Random();
 
 		//Populating the network weights and biases
-		for(int i = 1; i < n.length; i++){
-			double[][] layerWeights = new double[n[i - 1]][n[i]];
-			double[] layerBiases = new double[n[i]];
-			for(int j = 0; j < n[i]; j++){
-				layerBiases[j] = rand.nextGaussian();
-				
-				for(int k = 0; k < n[i - 1]; k++){
-					layerWeights[k][j] = rand.nextGaussian();
+		for(int i = 0; i < biases.length; i++){
+			biases[i] = new double[n[i + 1]];
+			for(int j = 0; j < biases[i].length; j++){
+				//rand.setSeed(System.currentTimeMillis());
+				biases[i][j] = rand.nextGaussian() * 0.3;
+				System.out.println(String.format("INITIAL BIAS[%d][%d]=", i, j) + biases[i][j]);
+
+			}
+		}
+		
+		for(int i = 0; i < n.length - 1; i++){
+			weights[i] = new double[n[i+1]][];
+			for(int j = 0; j < n[i+1]; j++){
+				weights[i][j] = new double[n[i]];
+				for(int k = 0; k < weights[i][j].length; k++){
+					//rand.setSeed(System.currentTimeMillis());
+					weights[i][j][k] = rand.nextGaussian() ;
+					System.out.println(String.format("INITIAL WEIGHT[%d][%d][%d]=", i, j, k) + weights[i][j][k]);
 				}
 			}
-			weights[i - 1] = layerWeights;
-			biases[i - 1] = layerBiases;
 		}
+		
 		System.out.println("Weights Size = " + weights.length + ", Biases size = " + biases.length);
 		System.out.println("Total number of layers = " + numberOfLayers);
+		printWeights();
 	}
+	
 	
 	/* takes in an input vector, of the same dimension as 
 	 * the first layer of the network (the input layer), 
@@ -101,6 +118,7 @@ public class Network {
 		calculateDeltas(2, input, idealOutput);
 	}
 	
+
 	/* Stochastic Gradient Descent (SGD) implementation. given a learning rate
 	 * and a set of training data (input/ideal output pairs), this method calculates
 	 * the cost function derivative (gradient) for each input, then uses the prior 
@@ -116,6 +134,8 @@ public class Network {
 		 * (i.e: components of the cost function's gradient)*/
 		double[][][] dCdw = F.zeros(weights);
 		double[][] dCdb = F.zeros(biases);
+		
+	
 		
 		// loops through the learning batch chunks
 		for(int x = 0; x <= numOfchunks; x++){
@@ -133,6 +153,8 @@ public class Network {
 			}
 			// loops through the chunk of training data
 			for(int i = x * chunkSize; i < endIndex; i++){
+				dCdw = F.zeros(weights);
+				dCdb = F.zeros(biases);
 				double[] input = training[i].getInput();
 				double[] ideal = training[i].getDesired();
 				calculateDeltas(input, ideal);
@@ -152,8 +174,8 @@ public class Network {
 				for(int j = 0; j < numberOfLayers - 1; j++){
 					for(int k = 0; k < weights[j].length; k++){
 						for(int n = 0; n < weights[j][k].length; n++){
-							double activation = activations[j][k];
-							double delta = deltas[j][n];
+							double activation = activations[j][n];
+							double delta = deltas[j][k];
 							dCdw[j][k][n] += activation * delta;
 						}
 					}
@@ -173,14 +195,28 @@ public class Network {
 			for(int i = 0; i < numberOfLayers - 1; i++){
 				for(int j = 0; j < weights[i].length; j++){
 					for(int k = 0; k < weights[i][j].length; k++){
-						weights[i][j][k] -= ((learningRate/chunkSize) * dCdw[i][j][k]);
+						weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
 					}
 				}
 			}
-			System.out.println("Completed chunk : " + x);
+			if(x % 10 == 0){
+				//printWeights();
+				double[] in1 = {1.0, 0.0};
+				
+				double[] out1 = {1.0};
+				
+				TrainingData one = new TrainingData(in1, out1);
+				double[] result = this.feedForward(in1);
+				NANDTest.buidler.append((String.format("\n> actual = %.3f,"
+						+ " ideal = %.3f, lr:%.2f, batch:%d", result[0],
+						out1[0], learningRate, chunkSize)));
+			}
+			//System.out.println("Completed chunk : " + x + "\n");
+			
 		}
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
 	}
+	
 	
 	public double[] getBiases(int layer){
 		return biases[layer - 2];
@@ -200,7 +236,19 @@ public class Network {
 	public void setDeltas(int layer, double[] values){
 			deltas[layer - 2] = values;
 	}
-	
+	public void setBiases(int layer, double[] values){
+		biases[layer - 2] =  values;
+	}
+	public void setWeights(int layer, double[][] values){
+		weights[layer - 2] =  values;
+	}
+	public void setZs(int layer, double[] values){
+		zs[layer - 2] =  values;
+	}
+	public void setActivations(int layer, double[] values){
+		activations[layer - 1] =  values;
+	}
+
 	@Override
 	public String toString(){
 		return "biases: " + biases.length
@@ -209,5 +257,55 @@ public class Network {
 		+"\nactivations: " + activations.length
 		+"\nZs: " + zs.length
 		+"\nDeltas: " + deltas.length;
+	}
+	
+	public void printWeights(){
+		System.out.println("WEIGHTS:");
+		for(int i = 0; i < weights.length; i++){
+			System.out.println("Layer: " + (i + 2) );
+			for(int j = 0; j < weights[i].length; j++){
+				System.out.print(j + ":");
+				for(int k = 0; k < weights[i][j].length; k++){
+					System.out.print("\t" +  weights[i][j][k]);
+				}
+				System.out.println("");
+			}
+		}
+		System.out.println("\n\n");
+	}
+	public void printDeltas(){
+		System.out.println("DELTAS:");
+		for(int i = 0; i < deltas.length; i++){
+			System.out.println("Layer: " + (i + 2) );
+			for(int j = 0; j < deltas[i].length; j++){
+				System.out.print("\t" + deltas[i][j]);
+			}
+			System.out.println("");
+		}
+		System.out.println("\n\n");
+	}
+	
+	public void printActivations(){
+		System.out.println("ACTIVATIONS:");
+		for(int i = 0; i < activations.length; i++){
+			System.out.println("Layer: " + (i + 1) );
+			for(int j = 0; j < activations[i].length; j++){
+				System.out.print("\t" + activations[i][j]);
+			}
+			System.out.println("");
+		}
+		System.out.println("\n\n");
+	}
+	
+	public void printBiases(){
+		System.out.println("BIASES:");
+		for(int i = 0; i < biases.length; i++){
+			System.out.println("Layer: " + (i + 2) );
+			for(int j = 0; j < biases[i].length; j++){
+				System.out.print("\t" + biases[i][j]);
+			}
+			System.out.println("");
+		}
+		System.out.println("\n\n");
 	}
 }
