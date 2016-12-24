@@ -3,21 +3,10 @@ package network;
 public class F {
 	
 	//returns the sum of two or more vectors 
-	public static double[] sum(double[] ...ds ){
-		int size = ds[0].length;
-		for(int i = 0; i < ds.length; i++){
-			if(ds[i].length != size){
-				throw new MismatchException("trying to add vectors of different dimensions."
-							    + "dimension should be: " + size 
-							    + "\nactual dimension" + ds[i].length);
-			}
-		}
-		
-		double[] res = new double[size];
-		for(int i = 0; i < ds[0].length; i++){
-			for(int j = 0; j < ds.length; j++){
-				res[i] += ds[j][i];
-			}
+	public static double[] sum(double[] a, double[] b){
+		double[] res = new double[a.length];
+		for(int i = 0; i < res.length; i++){
+			res[i] = a[i] + b[i];
 		}
 		return res;
 	}
@@ -84,15 +73,9 @@ public class F {
 			double[] result = new double[matrix.length];
 			if(vector.length > 1){
 				for(int i = 0; i < matrix.length; i++){
-					for(int j = 0; j < vector.length; j++){
-						matrix[i][j] *= vector[j];
-					}
-				}
-				for(int i = 0; i < result.length; i++){
 					result[i] = 0.0;
 					for(int j = 0; j < vector.length; j++){
-						//SUM THE COLUMNS
-						result[i] += matrix[i][j];
+						result[i] += matrix[i][j] * vector[j];
 					}
 				}
 			}

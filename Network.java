@@ -31,11 +31,7 @@ public class Network {
 		for(int i = 0; i < biases.length; i++){
 			biases[i] = new double[n[i + 1]];
 			for(int j = 0; j < biases[i].length; j++){
-				//rand.setSeed(System.currentTimeMillis());
-				biases[i][j] = rand.nextGaussian() * 0.3;
-				System.out.println(String.format("INITIAL BIAS[%d][%d]=", i, j)
-						+ biases[i][j]);
-
+				biases[i][j] = rand.nextGaussian();
 			}
 		}
 		
@@ -44,11 +40,7 @@ public class Network {
 			for(int j = 0; j < n[i+1]; j++){
 				weights[i][j] = new double[n[i]];
 				for(int k = 0; k < weights[i][j].length; k++){
-					//rand.setSeed(System.currentTimeMillis());
-					weights[i][j][k] = rand.nextGaussian() ;
-					System.out.println(String.format("INITIAL"
-							+ " WEIGHT[%d][%d][%d]=", i, j, k) 
-							+ weights[i][j][k]);
+					weights[i][j][k] = rand.nextGaussian();
 				}
 			}
 		}
@@ -117,7 +109,7 @@ public class Network {
 	 * and a set of training data (input/ideal output pairs), this method calculates
 	 * the cost function derivative (gradient) for each input, then uses the prior 
 	 * to update the network's weights and biases with the goal of minimizing the cost.*/
-	public void train(TrainingData[] training, double learningRate, int chunkSize){
+	public void train(TrainingData[] training, double learningRate, int chunkSize, int epochs){
 		
 		int numOfchunks = training.length / chunkSize;
 		int remainder = training.length % chunkSize;
@@ -129,72 +121,82 @@ public class Network {
 		double[][][] dCdw = F.zeros(weights);
 		double[][] dCdb = F.zeros(biases);
 		
-	
-		
-		// loops through the learning batch chunks
-		for(int x = 0; x <= numOfchunks; x++){
-			int startIndex, endIndex;
-			if(x < numOfchunks - 1){
-				startIndex = x * chunkSize;
-				endIndex = startIndex + chunkSize;
-			}
-			else if(remainder > 0){
-				startIndex = numOfchunks * chunkSize;
-				endIndex = training.length;
-			}
-			else{
-				break;
-			}
-			// loops through the chunk of training data
-			for(int i = x * chunkSize; i < endIndex; i++){
-				dCdw = F.zeros(weights);
-				dCdb = F.zeros(biases);
-				double[] input = training[i].getInput();
-				double[] ideal = training[i].getDesired();
-				calculateDeltas(input, ideal);
-				
-				 /* increments the sum of the cost function's partial
-				 * derivative with respect to the bias and  weight 
-				 * with the value of the partial derivatives for the 
-				 * current training data couple*/
-				
-				//biases errors
-				for(int j = 0; j < numberOfLayers - 1; j++){
-					for(int k = 0; k < biases[j].length; k++){
-						dCdb[j][k] += deltas[j][k];
+		if(epochs < 1){
+			epochs = 1;
+		}
+		for(int e = 0; e < epochs; e++){
+			// loops through the learning batch chunks
+			for(int x = 0; x <= numOfchunks; x++){
+				int startIndex, endIndex;
+				if(x < numOfchunks - 1){
+					startIndex = x * chunkSize;
+					endIndex = startIndex + chunkSize;
+				}
+				else if(remainder > 0){
+					startIndex = numOfchunks * chunkSize;
+					endIndex = training.length;
+				}
+				else{
+					break;
+				}
+				Random random = new Random(System.currentTimeMillis());
+				// loops through the chunk of training data
+				for(int i = x * chunkSize; i < endIndex; i++){
+					int randIndex = random.nextInt(training.length);
+					dCdw = F.zeros(weights);
+					dCdb = F.zeros(biases);
+					double[] input = training[randIndex].getInput();
+					double[] ideal = training[randIndex].getDesired();
+					calculateDeltas(input, ideal);
+					
+					 /* increments the sum of the cost function's partial
+					 * derivative with respect to the bias and  weight 
+					 * with the value of the partial derivatives for the 
+					 * current training data couple*/
+					
+					//biases errors
+					for(int j = 0; j < numberOfLayers - 1; j++){
+						for(int k = 0; k < biases[j].length; k++){
+							dCdb[j][k] += deltas[j][k];
+						}
+					}
+					
+					//weights errors
+					for(int j = 0; j < numberOfLayers - 1; j++){
+						for(int k = 0; k < weights[j].length; k++){
+							for(int n = 0; n < weights[j][k].length; n++){
+								double activation = activations[j][n];
+								double delta = deltas[j][k];
+								dCdw[j][k][n] += activation * delta;
+							}
+						}
+					}
+					
+				}
+				/* applies stochastic gradient descent to the networks  *
+				 * weights and biases using the values calculated above */
+				//biases
+				for(int i = 0; i < numberOfLayers - 1; i++){
+					for(int j = 0; j < biases[i].length; j++){
+						biases[i][j] -= ((learningRate/chunkSize) * dCdb[i][j]);
 					}
 				}
-				
-				//weights errors
-				for(int j = 0; j < numberOfLayers - 1; j++){
-					for(int k = 0; k < weights[j].length; k++){
-						for(int n = 0; n < weights[j][k].length; n++){
-							double activation = activations[j][n];
-							double delta = deltas[j][k];
-							dCdw[j][k][n] += activation * delta;
+					
+				//weights
+				for(int i = 0; i < numberOfLayers - 1; i++){
+					for(int j = 0; j < weights[i].length; j++){
+						for(int k = 0; k < weights[i][j].length; k++){
+							weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
 						}
 					}
 				}
-				
-			}
-			/* applies stochastic gradient descent to the networks  *
-			 * weights and biases using the values calculated above */
-			//biases
-			for(int i = 0; i < numberOfLayers - 1; i++){
-				for(int j = 0; j < biases[i].length; j++){
-					biases[i][j] -= ((learningRate/chunkSize) * dCdb[i][j]);
+				if(x % 1000 == 0){
+				System.out.println("Completed chunk : " + x);
 				}
 			}
-				
-			//weights
-			for(int i = 0; i < numberOfLayers - 1; i++){
-				for(int j = 0; j < weights[i].length; j++){
-					for(int k = 0; k < weights[i][j].length; k++){
-						weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
-					}
-				}
-			}
-			System.out.println("Completed chunk : " + x);
+			
+			System.out.println("Completed epoch:" + e + ". Testing the network...");
+			MNISTTest.testNetwork(this, MNISTTest.testData, 5000);
 		}
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
 	}
