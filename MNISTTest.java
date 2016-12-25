@@ -4,8 +4,8 @@ import java.util.Random;
 
 
 public class MNISTTest {
-	public static final String TRAINING_FILEPATH = "src/network/MNIST_train.txt";
-	public static final String TESTING_FILEPATH = "src/network/MNIST_test.txt";
+	public static final String TRAINING_FILEPATH = "/MNIST_train.txt";
+	public static final String TESTING_FILEPATH = "/MNIST_test.txt";
 	public static TrainingData[] trainingData;
 	public static TrainingData[] testData;
 	
