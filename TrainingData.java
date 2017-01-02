@@ -12,6 +12,7 @@ public class TrainingData {
 	public double[] getInput() {
 		return input;
 	}
+	
 	public double[] getDesired() {
 		return desired;
 	}
