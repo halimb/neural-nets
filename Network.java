@@ -137,9 +137,10 @@ public class Network {
 				else{
 					break;
 				}
-				Random random = new Random(System.currentTimeMillis());
+				
 				// loops through the chunk of training data
 				for(int i = x * chunkSize; i < endIndex; i++){
+					Random random = new Random(System.currentTimeMillis());
 					int randIndex = random.nextInt(training.length);
 					dCdw = F.zeros(weights);
 					dCdb = F.zeros(biases);
