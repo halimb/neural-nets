@@ -46,7 +46,6 @@ public class Network {
 		}
 	}
 	
-	
 	/* takes in an input vector, of the same dimension as 
 	 * the first layer of the network (the input layer), 
 	 * then feeds that input to the next layer, through 
@@ -99,7 +98,6 @@ public class Network {
 	 * all the errors in the network based on the provided actual 
 	 * and ideal outputs, starting from the first hidden layer (l:2).
 	 * Ignores the return value.  */
-	// <<TO REVISE>>
 	public void  calculateDeltas(double[] input, double[] idealOutput){
 		calculateDeltas(2, input, idealOutput);
 	}
@@ -186,7 +184,7 @@ public class Network {
 				for(int i = 0; i < numberOfLayers - 1; i++){
 					for(int j = 0; j < weights[i].length; j++){
 						for(int k = 0; k < weights[i][j].length; k++){
-							weights[i][j][k] = weights[i][j][k] - ((learningRate/chunkSize) * dCdw[i][j][k]);
+							weights[i][j][k] -= ((learningRate/chunkSize) * dCdw[i][j][k]);
 						}
 					}
 				}
