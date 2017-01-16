@@ -113,7 +113,7 @@ public class Network {
 		int remainder = training.length % chunkSize;
 		
 		/* initializes the matrices that will contain the 
-		 * sum cost function partial derivative with respect
+		 * sum of the cost function's partial derivative with respect
 		 * to individual weights (dC/dw) and biases (dC/db) 
 		 * (i.e: components of the cost function's gradient)*/
 		double[][][] dCdw = F.zeros(weights);
