@@ -195,7 +195,7 @@ public class Network {
 			}
 			
 			System.out.println("Completed epoch:" + e + ". Testing the network...");
-			MNISTTest.testNetwork(this, MNISTTest.testData, 5000);
+			MNISTTest.testNetwork(this, MNISTTest.testData);
 		}
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
 	}
