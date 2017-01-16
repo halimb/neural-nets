@@ -4,8 +4,10 @@ import java.util.Random;
 
 
 public class MNISTTest {
-	public static final String TRAINING_FILEPATH = "/MNIST_train.txt";
-	public static final String TESTING_FILEPATH = "/MNIST_test.txt";
+	/* MNIST_train: 60000 MNIST (label, features) pairs */
+	/* MNIST_test: 10000 MNIST (label, features) pairs */
+	public static final String TRAINING_FILEPATH = "MNIST_train.txt";
+	public static final String TESTING_FILEPATH = "MNIST_test.txt";
 	public static TrainingData[] trainingData;
 	public static TrainingData[] testData;
 	
