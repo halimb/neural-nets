@@ -18,62 +18,52 @@ public class MNISTTest {
 		Network net = new Network(784, 30, 10);
 		net.train(trainingData, 2.9, 10, 10);
 	}
-		
 	
-	public static void testNetwork(Network network, TrainingData[] testData, int testingSetSize){
-		int setSize;
-		if(testingSetSize == 0){
-			setSize = testData.length;
-		}
-		else{
-			setSize = testingSetSize;
-		}
-		
+	public static void testNetwork(Network network, TrainingData[] testData){
+		int idealIndex = 0;
+		int actualIndex = 0;
+		int setSize = testData.length;
 		Random random = new Random();
-		int correctPredictionsCount = 0;
-		double[] actual;
-		double[] ideal;
-		for(int i = 0; i < testingSetSize; i++){
-			int index = random.nextInt(testData.length);
+		int count = 0;
+		double[] actual = null;
+		double[] ideal = null;
+		for(int i = 0; i < setSize; i++){
+			int index = random.nextInt(setSize);
 			TrainingData testDatum = testData[index];
 			actual = network.feedForward(testDatum.getInput());
 			ideal = testDatum.getDesired();
-			int idealIndex = 42;
-			int actualIndex = 13;
 			double max = 0;
+			
 			for(int k = 0; k < actual.length; k++){
 				if(actual[k] > max){
 					actualIndex = k;
 					max = actual[k];
 				}
 			}
+			
 			for(int j = 0; j < ideal.length; j++){
-				if(ideal[j] > 0){
+				if(ideal[j] == 1){
 					idealIndex = j;
 					break;
 				}
 			}
 			
 			if(actualIndex == idealIndex){
-				correctPredictionsCount++;
+				count++;
 			}
-			if(i == testingSetSize - 1){
-				System.out.println(" <  <  <  <");
-				System.out.println("Ideal");
-				for(int o = 0; o < ideal.length; o++){
-					System.out.println(ideal[o]);
-				}
-				System.out.println("Actual");
-				for(int o = 0; o < actual.length; o++){
-					System.out.println(actual[o]);
-				}
-				System.out.println(" >  >  >  >");
-			}
+			
 		}
-		double accuracy = 100.0 * correctPredictionsCount/setSize;
+		System.out.println(" <  <  <  <");
+		System.out.println("Ideal\tActual");
+		for(int o = 0; o < ideal.length; o++){
+			System.out.println(ideal[o] + "\t" + actual[o]);
+		}
+		System.out.println(" >  >  >  >");
+		double accuracy = 100.0 * count/setSize;
 		System.out.println(
 				String.format("\nTested %d inputs, "
-						+ "got %d correct predictions.\n> > > > Accuracy : %.2f%%< < < <",
-						setSize, correctPredictionsCount, accuracy));
+						+ "got %d correct predictions."
+						+ "\n> > > > Accuracy : %.2f%%< < < <",
+						setSize, count, accuracy));
 	}
 }
