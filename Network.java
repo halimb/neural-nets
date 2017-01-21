@@ -63,13 +63,18 @@ public class Network {
 		}
 		double[] a = null, z;
 		activations[0]= input;
-		for(int i = 0; i < numberOfLayers - 1; i++){
-			z = F.sum( F.mDotv(weights[i], activations[i]),
-					   biases[i]);
+		for(int i = 0; i < numberOfLayers - 2; i++){
+			z = F.sum( F.mDotv(weights[i], activations[i]), biases[i]);
 			a = F.sigmoid(z);
 			zs[i] = z;
 			activations[i + 1] = a;
 		}
+		// Output layer
+		int i = numberOfLayers - 2;
+		z = F.sum(F.mDotv(weights[i], activations[i]), biases[i]);
+		a = F.softmax(z);
+		zs[i] = z;
+		activations[i + 1] = a;
 		return a;
 	}
 	
