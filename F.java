@@ -137,4 +137,18 @@ public class F {
 		return zeros;
 	}
 	
+	/* returns the the softmax activation of a layer */
+	public static double[] softmax(double[] z){
+		double sum = 0.0;
+		double[] soft = new double[z.length];
+		for(int i = 0; i < z.length; i++) {
+			soft[i] = Math.exp(z[i]);
+			sum += soft[i];
+		}
+		for(int i = 0; i < soft.length; i++) {
+			soft[i] /= sum;
+		}
+		return soft;
+	}
+	
 }
