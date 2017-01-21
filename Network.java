@@ -54,8 +54,7 @@ public class Network {
 	 * vector which is in turn going to be fed to the next 
 	 * layer and so on until the last layer (output layer)
 	 * is reached. the method  returns the output vector 
-	 * of the last layer, after populating the network's 
-	 * activation and weighted input vectors arrays.*/
+	 * of the last layer, which is calculated using Softmax*/
 	public double[] feedForward(double[] input) throws MismatchException{
 		if(input.length != inputLayerSize){
 			throw new MismatchException("The input vector and the network"
