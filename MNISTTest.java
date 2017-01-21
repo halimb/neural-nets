@@ -16,7 +16,7 @@ public class MNISTTest {
 		trainingData = new MNISTParser(TRAINING_FILEPATH).getData();
 		testData = new MNISTParser(TESTING_FILEPATH).getData();
 		Network net = new Network(784, 30, 10);
-		net.train(trainingData, 2.9, 10, 10);
+		net.train(trainingData, 2.9, 10, 10, 30);
 	}
 	
 	public static void testNetwork(Network network, TrainingData[] testData){
