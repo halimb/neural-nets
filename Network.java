@@ -13,7 +13,7 @@ public class Network {
 	public double[][] deltas;
 
 	/* CONSTRUCTOR
-	 * The number of int parameters in the Network(int...n)
+	 * The number of int parameters in Network(int...n)
 	 * is the number of layers in the network, with each 
 	 * entry representing the number of neurons in the corresponding layer.
 	 * */
