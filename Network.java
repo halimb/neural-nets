@@ -15,7 +15,7 @@ public class Network {
 	/* CONSTRUCTOR
 	 * The number of int parameters in the Network(int...n)
 	 * is the number of layers in the network, with each 
-	 * entry represents the number of neurons in a given layer.
+	 * entry representing the number of neurons in the corresponding layer.
 	 * */
 	public Network(int ... n){
 		numberOfLayers = n.length;
@@ -27,7 +27,7 @@ public class Network {
 		deltas = new double[numberOfLayers - 1][];
 		Random rand = new Random();
 
-		//Populating the network weights and biases
+		//Populating the network's weights and biases
 		for(int i = 0; i < biases.length; i++){
 			biases[i] = new double[n[i + 1]];
 			for(int j = 0; j < biases[i].length; j++){
@@ -47,7 +47,7 @@ public class Network {
 	}
 	
 	/* takes in an input vector, of the same dimension as 
-	 * the first layer of the network (the input layer), 
+	 * the first layer (the input layer), 
 	 * then feeds that input to the next layer, through 
 	 * the weights, adds the biases then applies the Sigmoid 
 	 * function to the weighted input, obtaining an output
@@ -100,8 +100,7 @@ public class Network {
 	
 	/* makes a call to the private method above to calculate
 	 * all the errors in the network based on the provided actual 
-	 * and ideal outputs, starting from the first hidden layer (l:2).
-	 * Ignores the return value.  */
+	 * and ideal outputs, starting from the first hidden layer (l:2)*/
 	public void  calculateDeltas(double[] input, double[] idealOutput){
 		calculateDeltas(2, input, idealOutput);
 	}
@@ -176,6 +175,7 @@ public class Network {
 					}
 					
 				}
+				
 				/* applies stochastic gradient descent to the networks  *
 				 * weights and biases using the values calculated above */
 				//biases
@@ -204,37 +204,7 @@ public class Network {
 		System.out.println("SUCCESSFULLY FINISHED LEARNING");
 	}
 	
-	public double[] getBiases(int layer){
-		return biases[layer - 2];
-	}
-	public double[][] getWeights(int layer){
-		return weights[layer - 2];
-	}
-	public double[] getZs(int layer){
-		return zs[layer - 2];
-	}
-	public double[] getActivations(int layer){
-		return activations[layer - 1];
-	}
-	public double[] getDeltas(int layer){
-		return deltas[layer - 2];
-	}
-	public void setDeltas(int layer, double[] values){
-			deltas[layer - 2] = values;
-	}
-	public void setBiases(int layer, double[] values){
-		biases[layer - 2] =  values;
-	}
-	public void setWeights(int layer, double[][] values){
-		weights[layer - 2] =  values;
-	}
-	public void setZs(int layer, double[] values){
-		zs[layer - 2] =  values;
-	}
-	public void setActivations(int layer, double[] values){
-		activations[layer - 1] =  values;
-	}
-
+	
 	@Override
 	public String toString(){
 		return "biases: " + biases.length
@@ -295,4 +265,37 @@ public class Network {
 		}
 		System.out.println("\n");
 	}
+	
+	// getters/setters
+	public double[] getBiases(int layer){
+		return biases[layer - 2];
+	}
+	public double[][] getWeights(int layer){
+		return weights[layer - 2];
+	}
+	public double[] getZs(int layer){
+		return zs[layer - 2];
+	}
+	public double[] getActivations(int layer){
+		return activations[layer - 1];
+	}
+	public double[] getDeltas(int layer){
+		return deltas[layer - 2];
+	}
+	public void setDeltas(int layer, double[] values){
+			deltas[layer - 2] = values;
+	}
+	public void setBiases(int layer, double[] values){
+		biases[layer - 2] =  values;
+	}
+	public void setWeights(int layer, double[][] values){
+		weights[layer - 2] =  values;
+	}
+	public void setZs(int layer, double[] values){
+		zs[layer - 2] =  values;
+	}
+	public void setActivations(int layer, double[] values){
+		activations[layer - 1] =  values;
+	}
+
 }
